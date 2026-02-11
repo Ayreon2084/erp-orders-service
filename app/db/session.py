@@ -19,4 +19,7 @@ async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
         Async database session instance.
     """
     async with AsyncSessionLocal() as async_session:
-        yield async_session
+        try:
+            yield async_session
+        finally:
+            await async_session.close()

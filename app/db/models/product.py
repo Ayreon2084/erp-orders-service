@@ -10,6 +10,7 @@ from app.db.models.mixins import TimestampMixin, SoftDeleteMixin
 class Product(TimestampMixin, SoftDeleteMixin, Base):
     __tablename__ = "products"
 
+    sku: Mapped[str] = mapped_column(String(50), unique=True, index=True, nullable=False)
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     quantity: Mapped[int] = mapped_column(Integer, default=0)
     price: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False)

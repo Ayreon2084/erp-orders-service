@@ -1,7 +1,7 @@
 from decimal import Decimal
 
 from sqlalchemy import Enum as SQLEnum
-from sqlalchemy import ForeignKey, Integer, Numeric
+from sqlalchemy import ForeignKey, Integer, Numeric, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.enums import OrderStatus
@@ -39,10 +39,10 @@ class OrderProduct(Base):
     __tablename__ = "order_products"
 
     order_id: Mapped[int] = mapped_column(
-        ForeignKey("orders.id", ondelete="CASCADE"), primary_key=True
+        ForeignKey("orders.id", ondelete="CASCADE")
     )
     product_id: Mapped[int] = mapped_column(
-        ForeignKey("products.id", ondelete="RESTRICT"), primary_key=True
+        ForeignKey("products.id", ondelete="RESTRICT")
     )
     
     quantity: Mapped[int] = mapped_column(Integer, nullable=False)
@@ -52,3 +52,7 @@ class OrderProduct(Base):
 
     order: Mapped["Order"] = relationship("Order", back_populates="order_products")
     product: Mapped["Product"] = relationship("Product", back_populates="order_products")
+
+    __table_args__ = (
+        UniqueConstraint("order_id", "product_id", name="uq_order_product"),
+    )
