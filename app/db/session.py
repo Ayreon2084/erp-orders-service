@@ -14,12 +14,14 @@ AsyncSessionLocal = async_sessionmaker(engine, expire_on_commit=False)
 
 async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
     """FastAPI dependency for database session.
-
-    Yields:
-        Async database session instance.
+    Commits on successful request completion; rolls back on exception.
     """
     async with AsyncSessionLocal() as async_session:
         try:
             yield async_session
+            await async_session.commit()
+        except Exception:
+            await async_session.rollback()
+            raise
         finally:
             await async_session.close()
