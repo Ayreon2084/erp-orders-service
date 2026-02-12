@@ -22,11 +22,7 @@ class Settings(BaseSettings):
 
     @property
     def database_url(self) -> str:
-        """Generate PostgreSQL async database URL.
-
-        Returns:
-            Database connection URL string.
-        """
+        """Return PostgreSQL async connection URL."""
         return (
             f"postgresql+asyncpg://{self.db_username}:{self.db_password}"
             f"@{self.db_host}:{self.db_port}/{self.db_name}"

@@ -44,7 +44,7 @@ class OrderProduct(Base):
     product_id: Mapped[int] = mapped_column(
         ForeignKey("products.id", ondelete="RESTRICT")
     )
-    
+
     quantity: Mapped[int] = mapped_column(Integer, nullable=False)
     # Price changes, therefore "price_at_order" field refers to 
     # price at the time of order to preserve historical data.

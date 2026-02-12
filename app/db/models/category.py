@@ -10,7 +10,13 @@ class Category(TimestampMixin, SoftDeleteMixin, Base):
 
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     parent_id: Mapped[int | None] = mapped_column(
-        ForeignKey("categories.id", ondelete="RESTRICT"), 
+        ForeignKey("categories.id", ondelete="RESTRICT"),
+        nullable=True,
+        index=True
+    )
+    # Denormalization: root_category_id for reports without recursive CTEs
+    root_category_id: Mapped[int | None] = mapped_column(
+        ForeignKey("categories.id", ondelete="RESTRICT"),
         nullable=True,
         index=True
     )
@@ -22,8 +28,13 @@ class Category(TimestampMixin, SoftDeleteMixin, Base):
         remote_side="Category.id"
     )
     children: Mapped[list["Category"]] = relationship(
-        "Category", 
+        "Category",
         back_populates="parent"
+    )
+    root_category: Mapped["Category | None"] = relationship(
+        "Category",
+        foreign_keys=[root_category_id],
+        remote_side="Category.id"
     )
 
     products: Mapped[list["Product"]] = relationship(

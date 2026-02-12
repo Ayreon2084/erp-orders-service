@@ -25,17 +25,20 @@ def upgrade() -> None:
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=255), nullable=False),
     sa.Column('parent_id', sa.Integer(), nullable=True),
+    sa.Column('root_category_id', sa.Integer(), nullable=True),
     sa.Column('created_at', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
     sa.Column('updated_at', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
     sa.Column('is_deleted', sa.Boolean(), nullable=False),
     sa.Column('deleted_at', sa.DateTime(), nullable=True),
     sa.ForeignKeyConstraint(['parent_id'], ['categories.id'], ondelete='RESTRICT'),
+    sa.ForeignKeyConstraint(['root_category_id'], ['categories.id'], ondelete='RESTRICT'),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_categories_created_at'), 'categories', ['created_at'], unique=False)
     op.create_index(op.f('ix_categories_deleted_at'), 'categories', ['deleted_at'], unique=False)
     op.create_index(op.f('ix_categories_is_deleted'), 'categories', ['is_deleted'], unique=False)
     op.create_index(op.f('ix_categories_parent_id'), 'categories', ['parent_id'], unique=False)
+    op.create_index(op.f('ix_categories_root_category_id'), 'categories', ['root_category_id'], unique=False)
     op.create_table('clients',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('full_name', sa.String(length=255), nullable=False),
@@ -112,6 +115,7 @@ def downgrade() -> None:
     op.drop_index(op.f('ix_clients_deleted_at'), table_name='clients')
     op.drop_index(op.f('ix_clients_created_at'), table_name='clients')
     op.drop_table('clients')
+    op.drop_index(op.f('ix_categories_root_category_id'), table_name='categories')
     op.drop_index(op.f('ix_categories_parent_id'), table_name='categories')
     op.drop_index(op.f('ix_categories_is_deleted'), table_name='categories')
     op.drop_index(op.f('ix_categories_deleted_at'), table_name='categories')
